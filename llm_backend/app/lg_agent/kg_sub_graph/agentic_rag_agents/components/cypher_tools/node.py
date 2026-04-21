@@ -110,8 +110,8 @@ def create_cypher_query_node(
             auth=(NEO4J_USERNAME, NEO4J_PASSWORD)
             )
 
-        # 这里请替换为你自己的 DeepSeek API Key，避免提交真实密钥到仓库
-        client = OpenAILLM(api_key="YOUR_DEEPSEEK_API_KEY", base_url="https://api.deepseek.com", model_name='deepseek-chat')
+        # 示例中也建议从环境变量读取，避免把真实密钥写进代码仓库
+        client = OpenAILLM(api_key=os.getenv("DEEPSEEK_API_KEY", ""), base_url="https://api.deepseek.com", model_name='deepseek-chat')
 
         
         # 定义用户输入：

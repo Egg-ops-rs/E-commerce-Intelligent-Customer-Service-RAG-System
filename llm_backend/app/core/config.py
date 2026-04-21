@@ -1,10 +1,13 @@
-from pydantic_settings import BaseSettings
 from enum import Enum
 from pathlib import Path
+
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 # 获取项目根目录
 ROOT_DIR = Path(__file__).parent.parent.parent
 ENV_FILE = ROOT_DIR / ".env"
+load_dotenv(ENV_FILE)
 
 class ServiceType(str, Enum):
     DEEPSEEK = "deepseek"

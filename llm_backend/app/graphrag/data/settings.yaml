@@ -23,10 +23,10 @@ models:
     requests_per_minute: 0            # set to 0 to disable rate limiting
   default_embedding_model:
     type: openai_embedding # or azure_openai_embedding
-    api_base: ${Embedding_API_BASE}
+    api_base: ${EMBEDDING_API_BASE}
     auth_type: api_key # or azure_managed_identity
-    api_key: ${Embedding_API_KEY}
-    model: ${Embedding_MODEL_NAME}
+    api_key: ${EMBEDDING_API_KEY}
+    model: ${EMBEDDING_MODEL_NAME}
     # deployment_name: <azure_model_deployment_name>
     encoding_model: cl100k_base # automatically set by tiktoken if left undefined
     model_supports_json: true # recommended if this is available for your model.

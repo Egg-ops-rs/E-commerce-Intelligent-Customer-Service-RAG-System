@@ -1,85 +1,160 @@
-# 问道星辰 - 基于大语言模型构建的智能客服系统
+# 问道星辰：企业级智能客服系统
 
-一个基于 FastAPI 和 Vue 3 构建的前后端分离的智能客服助手项目，支持多种大语言模型，如DeepSeek V3，Qwen2.5系列，Llama3系列等。涵盖了 Agent、RAG 在智能客服领域的主流应用落地需求场景。 
+一个基于 `FastAPI`、`LangGraph`、`GraphRAG` 和多模型接入能力构建的智能客服项目。系统面向企业知识问答、联网检索、文档问答、图谱推理和多轮会话等场景，支持同时接入 `DeepSeek`、`Ollama`、视觉模型和 GraphRAG 检索链路。
 
-## 功能特性
+## 核心能力
 
-### 1. 通用问答能力
-- **支持 DeepSeek V3 在线API**
-- **支持 使用 Ollama 接入任意对话模型，如Qwen2.5系列，Llama3系列**
-- **灵活的模配置**
+- 通用对话：支持 DeepSeek 在线模型与 Ollama 本地模型切换
+- 推理问答：支持深度思考类模型和多轮流式输出
+- Agent 编排：基于 LangGraph 组织工具调用、检索与推理流程
+- 文档问答：支持文件上传、索引构建和基于知识库的问答
+- 图谱增强：集成 Neo4j 与 GraphRAG 能力
+- 联网搜索：支持通过 SerpAPI 补充外部信息
+- 图片理解：支持图像输入与视觉模型分析
 
-### 2. 深度思考能力
-- **支持 DeepSeek R1 在线API**
-- **支持 使用 Ollama 接入任意 Deepseek r1 模型系列**
-- **灵活的模配置**
+## 技术栈
 
+- 后端：`FastAPI`、`SQLAlchemy`、`Redis`
+- 大模型编排：`LangGraph`、`LangChain`
+- 检索增强：`GraphRAG`、`Neo4j`
+- 模型支持：`DeepSeek`、`Ollama`、OpenAI 兼容视觉/Embedding 接口
 
-### 3. ollama 性能测试工具
-- 单请求性能测试
-- 并发性能测试
-- 系统资源监控
-- 自动化测试报告
+## 项目结构
 
-## 快速启动
+```text
+.
+├─ llm_backend/
+│  ├─ app/
+│  │  ├─ api/                # 接口路由
+│  │  ├─ core/               # 配置、日志、数据库等基础模块
+│  │  ├─ services/           # 聊天、搜索、索引等服务
+│  │  ├─ lg_agent/           # LangGraph Agent 相关逻辑
+│  │  └─ graphrag/           # GraphRAG 相关配置和代码
+│  ├─ static/dist/           # 前端静态资源
+│  ├─ main.py                # FastAPI 入口
+│  └─ run.py                 # 本地启动脚本
+├─ .env.example              # 环境变量模板
+└─ requirements.txt          # Python 依赖
+```
+
+## 快速开始
 
 ### 1. 安装依赖
 
 ```bash
-# 创建虚拟环境
 python -m venv .venv
+```
 
-# 激活虚拟环境
-# Windows
+Windows:
+
+```bash
 .venv\Scripts\activate
-# Linux/Mac
-source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-# 安装依赖
+Linux / macOS:
+
+```bash
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ### 2. 配置环境变量
 
-复制 `env.example` 文件到 `llm_backend/.env` 文件中，并根据实际情况修改配置：
-
-```env
-# LLM 服务配置
-CHAT_SERVICE=OLLAMA  # 或 DEEPSEEK
-REASON_SERVICE=OLLAMA  # 或 DEEPSEEK
-
-# Ollama 配置
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_CHAT_MODEL=deepseek-coder:6.7b
-OLLAMA_REASON_MODEL=deepseek-coder:6.7b
-
-# DeepSeek 配置（如果使用）
-DEEPSEEK_API_KEY=your-api-key
-DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
-DEEPSEEK_MODEL=deepseek-chat
-```
-### 3. 安装Mysql数据库并在 `.env` 文件中配置数据库连接信息
-
-### 4. 启动服务
+将根目录的 `.env.example` 复制为 `llm_backend/.env`，然后按你的实际环境填写：
 
 ```bash
-# 进入后端目录
-cd llm_backend
-
-# 启动服务（默认端口 9000）
-python run.py
-
-# 如果需要修改 IP 和端口，编辑 run.py 中的配置：
-uvicorn.run(
-    "main:app",
-    host="0.0.0.0",  # 修改监听地址
-    port=8000,       # 修改端口号
-    access_log=False,
-    log_level="error",
-    reload=True
-)
+copy .env.example llm_backend\.env
 ```
 
-服务启动后可以访问：
-- API 文档：http://localhost:8000/docs
-- 前端界面：http://localhost:8000
+或：
+
+```bash
+cp .env.example llm_backend/.env
+```
+
+当前项目已经调整为在后端启动时自动加载 `llm_backend/.env`，同时 GraphRAG 的 YAML 配置也会复用这套环境变量。
+
+常用变量示例：
+
+```env
+DEEPSEEK_API_KEY=your-deepseek-api-key
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat
+
+VISION_API_KEY=your-vision-api-key
+VISION_BASE_URL=https://ai.devtool.tech/proxy/v1
+VISION_MODEL=gpt-4o
+
+EMBEDDING_API_KEY=your-embedding-api-key
+EMBEDDING_API_BASE=https://ai.devtool.tech/proxy/v1
+EMBEDDING_MODEL_NAME=text-embedding-3-small
+
+CHAT_SERVICE=deepseek
+REASON_SERVICE=ollama
+AGENT_SERVICE=deepseek
+```
+
+### 3. 准备依赖服务
+
+请确保以下服务可用，并在 `llm_backend/.env` 中填写对应连接信息：
+
+- MySQL
+- Redis
+- Neo4j
+- DeepSeek 或 Ollama
+
+如果你使用文档索引或 GraphRAG，还需要检查：
+
+- `GRAPHRAG_PROJECT_DIR`
+- `GRAPHRAG_DATA_DIR`
+- Embedding 相关配置
+
+### 4. 启动后端
+
+```bash
+cd llm_backend
+python run.py
+```
+
+默认访问地址：
+
+- 接口文档：`http://localhost:8000/docs`
+- 应用首页：`http://localhost:8000`
+- 健康检查：`http://localhost:8000/health`
+
+## 配置说明
+
+### 模型切换
+
+- `CHAT_SERVICE=deepseek` 或 `ollama`
+- `REASON_SERVICE=deepseek` 或 `ollama`
+- `AGENT_SERVICE=deepseek` 或 `ollama`
+
+### GraphRAG 配置
+
+`llm_backend/app/graphrag/settings.yaml` 和 `llm_backend/app/graphrag/data/settings_pdf.yaml` 已改为通过环境变量读取模型配置，避免将密钥直接写入仓库。
+
+### 安全建议
+
+- 不要把真实的 `.env` 文件提交到 GitHub
+- 不要在 `settings.yaml`、脚本或测试文件中写死 API Key
+- 生产环境请替换 `SECRET_KEY` 为高强度随机值
+
+## 常见问题
+
+### 1. 启动时报缺少环境变量
+
+检查 `llm_backend/.env` 是否存在，并确认必要变量已经填写完整。
+
+### 2. GraphRAG 无法构建索引
+
+优先确认以下几项：
+
+- GraphRAG 相关目录是否存在
+- Embedding 模型配置是否可用
+- 上传文件目录和输出目录是否有写权限
+
+### 3. Ollama 模型调用失败
+
+检查本机或远程 Ollama 服务地址是否正确，以及对应模型是否已拉取完成。
